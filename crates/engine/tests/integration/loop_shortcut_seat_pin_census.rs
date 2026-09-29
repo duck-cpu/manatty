@@ -145,10 +145,6 @@ fn distinct_lines(sites: &[Site]) -> usize {
 /// with the matching rule delegated to [`sites_in_source`].
 fn production_sites(needle: &str) -> Vec<Site> {
     let engine_src = Path::new(env!("CARGO_MANIFEST_DIR")).join("src");
-    let server_src = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .join("..")
-        .join("server-core")
-        .join("src");
     let ai_src = Path::new(env!("CARGO_MANIFEST_DIR"))
         .join("..")
         .join("phase-ai")
@@ -156,7 +152,6 @@ fn production_sites(needle: &str) -> Vec<Site> {
     let mut out = Vec::new();
     for (root, prefix) in [
         (engine_src, "engine/src"),
-        (server_src, "server-core/src"),
         (ai_src, "phase-ai/src"),
     ] {
         for path in rs_files(&root) {
@@ -250,8 +245,7 @@ fn no_target_class_producer_constructs_a_choice_class_player_pin() {
             "engine/src/game/interaction.rs",
             "engine/src/game/visibility.rs",
             "engine/src/types/actions.rs",
-            "server-core/src/game_action_payload_guard.rs",
-        ],
+             ],
         "CR 601.2c / CR 115.10a PROVENANCE SPLIT VIOLATED, or a new unclassified \
          `TargetPin::Player` production site appeared.\n\
          The surviving production sites and their dispositions:\n\

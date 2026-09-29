@@ -188,18 +188,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "draft-core"
-version = "0.96.0"
-dependencies = [
- "phase-engine",
- "rand",
- "rand_chacha",
- "serde",
- "serde_json",
- "thiserror",
-]
-
-[[package]]
 name = "either"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -709,7 +697,6 @@ dependencies = [
 name = "phase-llm"
 version = "0.96.0"
 dependencies = [
- "draft-core",
  "phase-ai",
  "phase-engine",
  "serde",

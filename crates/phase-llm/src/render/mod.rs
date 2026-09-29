@@ -5,7 +5,7 @@
 //! something, the engine renders it here.
 
 pub mod action;
-#[cfg(feature = "draft")]
-pub mod draft;
+// #[cfg(feature = "draft")]
+// pub mod draft;
 pub mod game;
 pub mod text;

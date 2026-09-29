@@ -613,7 +613,7 @@ fn kilo_accept_marks_pentad_charge_as_unbounded_display_target() {
             .collect();
     let path = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../client/src/test/fixtures/unbounded-counter-wire.json"
+        "/tests/fixtures/unbounded-counter-wire.json"
     );
     if std::env::var_os("UPDATE_WIRE_GOLDEN").is_some() {
         // `client/src/test/fixtures/` may not exist yet; `fs::write` does not create parents.

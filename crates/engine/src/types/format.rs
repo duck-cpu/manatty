@@ -4520,28 +4520,7 @@ mod tests {
         );
     }
 
-    /// Built-in format names carried on the CODE half of each line in `region`
-    /// that begins with `prefix`, taking the first double-quoted token.
-    ///
-    /// `source_census::code` is this repository's single authority on which
-    /// part of a line is code; TypeScript's `//` is lexically the same as
-    /// Rust's for that purpose, so it is reused per `source_census`'s
-    /// single-authority rule rather than re-invented. Mutation-tested:
-    /// bypassing both call sites here leaves both callers below green
-    /// against the current file contents — no line depends on it today.
-    ///
-    /// `region` is a parameter because `types.ts` carries `| "…"` lines
-    /// belonging to unions other than `BuiltInGameFormat`, so that union's own
-    /// region must be isolated; `formatRegistry.ts` needs no region because
-    /// every `format: "…"` line in it is an entry field.
-    fn client_format_names(region: &str, prefix: &str) -> Vec<String> {
-        region
-            .lines()
-            .map(crate::source_census::code)
-            .filter_map(|line| line.trim().strip_prefix(prefix))
-            .filter_map(|rest| rest.split('"').nth(1).map(str::to_owned))
-            .collect()
-    }
+
 
     /// `client/src/adapter/types.ts`'s `BuiltInGameFormat` union must name
     /// exactly the engine's built-in formats.
@@ -4562,43 +4541,10 @@ mod tests {
     /// the engine's declaration order nor `registry()`'s, and pinning an order
     /// nothing owns would be a test of formatting.
     ///
+
     /// No separate non-vacuity premise is needed. The comparison is against a
     /// non-empty right side, so an extraction that finds nothing FAILS rather
     /// than passing.
-    #[test]
-    fn client_builtin_game_format_union_matches_the_engine() {
-        use strum::IntoEnumIterator;
-
-        const TYPES_TS: &str = include_str!("../../../../client/src/adapter/types.ts");
-
-        // The union's own span: from its declaration header to the first
-        // subsequent line whose code half ends in `;`.
-        let mut lines = TYPES_TS
-            .lines()
-            .skip_while(|line| !line.starts_with("export type BuiltInGameFormat ="));
-        let _header = lines
-            .next()
-            .expect("client/src/adapter/types.ts must declare `export type BuiltInGameFormat =`");
-        let mut region = String::new();
-        for line in lines {
-            region.push_str(line);
-            region.push('\n');
-            if crate::source_census::code(line).trim_end().ends_with(';') {
-                break;
-            }
-        }
-
-        let mut found = client_format_names(&region, "| ");
-        let mut expected: Vec<String> = GameFormat::iter().map(|f| f.to_string()).collect();
-        found.sort();
-        expected.sort();
-        assert_eq!(
-            found, expected,
-            "client/src/adapter/types.ts's BuiltInGameFormat union must name \
-             exactly the engine's built-in formats"
-        );
-    }
-
     /// `client/src/data/formatRegistry.ts`'s `FORMAT_REGISTRY` must mirror
     /// `GameFormat::registry()` — the same formats, in the same order, with no
     /// duplicated or half-written entry.
@@ -4621,44 +4567,6 @@ mod tests {
     /// `format:` the same number of times, rather than hardcoding an
     /// assertion that it equals two, so a uniform change to how many times
     /// every entry writes `format:` continues to pass.
-    #[test]
-    fn client_format_registry_matches_the_engine_registry() {
-        const REGISTRY_TS: &str = include_str!("../../../../client/src/data/formatRegistry.ts");
-
-        let raw = client_format_names(REGISTRY_TS, "format: ");
-
-        let mut entries: Vec<String> = Vec::new();
-        for name in &raw {
-            if entries.last() != Some(name) {
-                entries.push(name.clone());
-            }
-        }
-        let expected: Vec<String> = GameFormat::registry()
-            .iter()
-            .map(|meta| meta.format.to_string())
-            .collect();
-        assert_eq!(
-            entries, expected,
-            "client/src/data/formatRegistry.ts must mirror GameFormat::registry(), \
-             in the same order"
-        );
-
-        let mut counts: Vec<(String, usize)> = expected
-            .iter()
-            .map(|name| (name.clone(), raw.iter().filter(|n| *n == name).count()))
-            .collect();
-        counts.sort_by_key(|(_, n)| *n);
-        let (lowest, highest) = (counts.first().unwrap(), counts.last().unwrap());
-        assert_eq!(
-            lowest.1, highest.1,
-            "every FORMAT_REGISTRY entry must write `format:` the same number of \
-             times; {} writes it {} and {} writes it {}. A duplicated entry, a \
-             half-written entry, or a default_config.format that disagrees with \
-             its own key all look like this — and all of them survive the \
-             sequence check above",
-            lowest.0, lowest.1, highest.0, highest.1
-        );
-    }
 
     #[test]
     fn recorded_legality_table_agrees_with_every_table_backed_card_pool() {
@@ -4708,43 +4616,6 @@ mod tests {
     /// `client/src/data/formatRegistry.ts`'s `legality_key` lines must equal
     /// the engine's, entry by entry. The client names its deck-browser
     /// legality lens from them.
-    #[test]
-    fn client_format_registry_legality_keys_match_the_engine() {
-        const REGISTRY_TS: &str = include_str!("../../../../client/src/data/formatRegistry.ts");
-
-        let found: Vec<Option<String>> = REGISTRY_TS
-            .lines()
-            .map(crate::source_census::code)
-            .filter_map(|line| {
-                let trimmed = line.trim();
-                trimmed.strip_prefix("legality_key: ")
-            })
-            .map(|rest| {
-                let rest = rest.trim().strip_suffix(',').unwrap_or(rest.trim());
-                if rest == "null" {
-                    None
-                } else if let Some(token) = rest.strip_prefix('"').and_then(|s| s.strip_suffix('"'))
-                {
-                    Some(token.to_owned())
-                } else {
-                    panic!("unrecognized legality_key line: {rest:?}");
-                }
-            })
-            .collect();
-
-        let expected: Vec<Option<String>> = GameFormat::registry()
-            .iter()
-            .map(|meta| meta.legality_key.map(str::to_owned))
-            .collect();
-
-        assert!(!expected.is_empty());
-        assert_eq!(
-            found, expected,
-            "client/src/data/formatRegistry.ts's legality_key lines must equal \
-             the engine's, entry by entry"
-        );
-    }
-
     #[test]
     fn limited_in_registry() {
         let registry = GameFormat::registry();

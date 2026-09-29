@@ -7283,7 +7283,7 @@ mod tests {
 
         let path = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../client/src/test/fixtures/unbounded-family-tags.json"
+            "/tests/fixtures/unbounded-family-tags.json"
         );
         if std::env::var_os("UPDATE_WIRE_GOLDEN").is_some() {
             std::fs::create_dir_all(

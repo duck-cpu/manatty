@@ -16,10 +16,6 @@ use super::source_census::code;
 
 const FORMAT_RS: &str = include_str!("../../src/types/format.rs");
 const DECK_VALIDATION_RS: &str = include_str!("../../src/game/deck_validation.rs");
-const CLIENT_TYPES_TS: &str = include_str!("../../../../client/src/adapter/types.ts");
-const CLIENT_FORMAT_REGISTRY_TS: &str =
-    include_str!("../../../../client/src/data/formatRegistry.ts");
-
 /// How many of `src`'s production-scope (non-`#[cfg(test)]`), code-half lines
 /// contain `needle`.
 fn production_count(src: &str, needle: &str) -> usize {
@@ -264,35 +260,7 @@ fn unrestricted_card_pool_declarations_match_the_committed_list() {
     );
 }
 
-/// No format axis reaches either client mirror.
-/// These axes are `GameFormat` methods, not `FormatConfig`/`FormatMetadata`
-/// fields, so they have no wire surface by design; this asserts the absence
-/// the design promises.
-///
-/// Reach-guard: both files must still carry the existing `sideboard_policy`
-/// key, so a failed extraction (reading the wrong file) cannot pass by
-/// finding nothing.
-#[test]
-fn no_format_axis_key_reaches_the_client_mirror() {
-    for (label, src) in [
-        ("client/src/adapter/types.ts", CLIENT_TYPES_TS),
-        (
-            "client/src/data/formatRegistry.ts",
-            CLIENT_FORMAT_REGISTRY_TS,
-        ),
-    ] {
-        assert!(
-            src.contains("sideboard_policy"),
-            "reach guard: {label} must still declare sideboard_policy"
-        );
-        for key in ["card_pool", "commander_pairing", "deck_size_subject"] {
-            assert!(
-                !src.contains(key),
-                "{label} must not gain a `{key}` key — this axis has no wire surface"
-            );
-        }
-    }
-}
+
 
 /// `FormatMetadata`'s field list is exactly its
 /// committed shape. A presence assertion against a non-empty expected list,

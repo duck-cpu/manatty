@@ -6305,7 +6305,7 @@ mod tests {
         });
         let path = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../client/src/test/fixtures/keyword-payload-wire.json"
+            "/tests/fixtures/keyword-payload-wire.json" 
         );
         if std::env::var_os("UPDATE_WIRE_GOLDEN").is_some() {
             std::fs::write(

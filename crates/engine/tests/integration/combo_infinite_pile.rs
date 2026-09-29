@@ -276,7 +276,7 @@ fn real_4p_object_growth_accept_writes_infinite_pile() {
         .collect();
     let path = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../client/src/test/fixtures/unbounded-token-wire.json"
+        "/tests/fixtures/unbounded-token-wire.json"
     );
     if std::env::var_os("UPDATE_WIRE_GOLDEN").is_some() {
         // `client/src/test/fixtures/` may not exist yet; `fs::write` does not create parents.
@@ -2164,6 +2164,7 @@ fn real_4p_boundary_collapse_batches_unobserved_counter_and_declines_observed_li
 /// (assertion 2) is the positive reach-guard proving the submit ran past the short-circuit.
 ///
 /// This fn is ALSO the `unbounded-declined-wire.json` golden emitter. Its write ordering is
+///
 /// load-bearing — see the ordering rule at the wire pin below (PART 1), and the general statement
 /// of it in `kilo_live_offer_from_real_dump.rs`.
 #[test]
@@ -2253,7 +2254,7 @@ fn real_4p_counter_observer_drift_in_window_declines_batched_counter_but_still_m
             .collect();
     let path = concat!(
         env!("CARGO_MANIFEST_DIR"),
-        "/../../client/src/test/fixtures/unbounded-declined-wire.json"
+        "/tests/fixtures/unbounded-declined-wire.json"
     );
     if std::env::var_os("UPDATE_WIRE_GOLDEN").is_some() {
         std::fs::create_dir_all(

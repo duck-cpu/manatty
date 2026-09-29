@@ -6734,14 +6734,7 @@ fn recursive_outbound_budget_counts_nested_choice_surfaces() {
 }
 
 #[test]
-fn generated_contract_and_projection_source_exclude_unstable_internal_strings() {
-    let generated = include_str!("../../../../client/src/adapter/generated/interaction/index.ts");
-    assert!(generated.contains("\"invalidAuthorityState\""));
-    assert!(generated.contains("InteractionActionCode"));
-    assert!(generated.contains("InteractionRoleCode"));
-    assert!(generated.contains("InteractionShortcutResponseCode"));
-    assert!(!generated.contains("semanticCode"));
-
+fn projection_source_excludes_unstable_internal_strings() {
     let projection_source = include_str!("../../src/game/interaction.rs");
     assert!(
         projection_source.contains("Vec<(LoopShortcutPointProjection, Vec<u32>)>"),

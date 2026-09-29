@@ -42,8 +42,8 @@ pub mod provider;
 pub mod render;
 pub mod wire;
 
-#[cfg(feature = "draft")]
-pub mod draft_decision;
+// #[cfg(feature = "draft")]
+// pub mod draft_decision;
 
 pub use error::{LlmError, LlmResult};
 pub use game_decision::{
@@ -58,7 +58,7 @@ pub use provider::{
 };
 pub use wire::{build_chat_request, completion_from_response, extract_completion_text};
 
-#[cfg(feature = "draft")]
-pub use draft_decision::{
-    build_draft_pick_prompt, pick_fingerprint, select_picks, DraftPickRequest, LlmPickSelection,
-};
+// #[cfg(feature = "draft")]
+// pub use draft_decision::{
+//    build_draft_pick_prompt, pick_fingerprint, select_picks, DraftPickRequest, LlmPickSelection,
+// };

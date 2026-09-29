@@ -11669,7 +11669,7 @@ mod tests {
     fn every_preview_family_spells_the_same_wire_string_as_its_unbounded_family() {
         let path = concat!(
             env!("CARGO_MANIFEST_DIR"),
-            "/../../client/src/test/fixtures/unbounded-family-tags.json"
+            "/tests/fixtures/unbounded-family-tags.json"
         );
         let golden: BTreeMap<String, UnboundedFamily> =
             serde_json::from_str(&std::fs::read_to_string(path).expect("committed family golden"))

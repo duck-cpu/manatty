@@ -34,8 +34,6 @@ use engine::types::match_config::{DeckCardCount, MatchPhase};
 use engine::types::player::PlayerId;
 use strum::IntoEnumIterator;
 
-use super::format_axis_census;
-use super::source_census;
 use super::support;
 
 fn repeat(name: &str, n: usize) -> Vec<String> {
@@ -389,62 +387,6 @@ fn freeform_commander_eligibility_governs_each_commander_slot() {
             );
         }
     }
-}
-
-/// How many of `text`'s own lines contain `needle` on the CODE half — this
-/// file's own route through the comment-stripping authority
-/// (`super::source_census::code`), mirroring `format_axis_census`'s private
-/// `count_needle`. Not that sibling's function itself: this file independently
-/// `include_str!`s a `.rs` path (`ENGINE_WASM_LIB_RS` below) and counts a
-/// needle in it, so it is itself in `source_census`'s producer population
-/// (see `source_census::tests::no_source_reading_file_carries_a_private_comment_policy`)
-/// and must route directly rather than through a peer's private routing.
-fn count_needle(text: &str, needle: &str) -> usize {
-    text.lines()
-        .filter(|line| source_census::code(line).contains(needle))
-        .count()
-}
-
-/// Establishes separately that the verdict is reached through
-/// the surface the client actually calls — the OTHER client-called surface,
-/// `engine-wasm::is_card_commander_eligible_for_format`. This export takes
-/// `JsValue` and is reachable only from a wasm target, so unlike
-/// `validate_deck_list_seats` (driven natively — see
-/// `crates/engine-wasm/src/lib.rs`'s `deck_list_seat_validation_tests`) this
-/// stays a SOURCE CENSUS: a positive control on the pre-existing
-/// `TinyLeaders` arm proves the extraction reads the real function body
-/// rather than an empty or truncated span. What would establish this more
-/// strongly: a client integration test calling
-/// `isCardCommanderEligibleForFormat` against a freshly built `.wasm`.
-#[test]
-fn freeform_commander_eligibility_is_answered_by_the_surface_the_client_calls() {
-    const ENGINE_WASM_LIB_RS: &str = include_str!("../../../engine-wasm/src/lib.rs");
-    let span = format_axis_census::fn_span(
-        ENGINE_WASM_LIB_RS,
-        "pub fn is_card_commander_eligible_for_format(",
-    );
-    // `count_needle` (not `str::contains`) so a needle written inside a
-    // comment in this span cannot satisfy the assertion — `fn_span` strips
-    // comments only to find the span's BOUNDARIES; the slice it returns is
-    // raw source. `== 1` rather than `>= 1`: each needle names a single
-    // match arm, so a duplicate arm is itself a defect this assertion
-    // should catch, not tolerate.
-    assert_eq!(
-        count_needle(
-            span,
-            "GameFormat::FreeformCommander => is_freeform_commander_eligible(face)"
-        ),
-        1,
-        "{span}"
-    );
-    assert_eq!(
-        count_needle(
-            span,
-            "GameFormat::TinyLeaders => is_tiny_leader_eligible(face)"
-        ),
-        1,
-        "{span}"
-    );
 }
 
 /// The count boundary: exactly one or two commanders are admitted, three are
