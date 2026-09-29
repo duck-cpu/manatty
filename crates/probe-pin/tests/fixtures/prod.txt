@@ -1,2 +1,0 @@
-SITE-ONE marker alpha
-SITE-TWO marker beta
