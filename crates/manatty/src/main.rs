@@ -1,7 +1,9 @@
 use engine::types::game_state::GameState;
 use engine::types::format::FormatConfig;
+use engine::database::CardDatabase;
 use std::path::PathBuf;
 use std::env;
+use std::process;
 
 fn main() {
     //GameState::new(FormatConfig::format, number of players, seed);
@@ -15,6 +17,25 @@ fn main() {
 
     let card_path = card_data_path();
     println!("card database: {}", card_path.display());
+
+    match CardDatabase::from_mtgjson(&card_path) {
+        Ok(db) => {
+            match db.get_face_by_name("Lightning Bolt") {
+                Some(card) => {
+                    println!("Name: {}", card.name);
+                    println!("Mana Cost: {:?}", card.mana_cost);
+                },
+                None => {
+                    eprintln!("No card found.");
+                    process::exit(1);
+                },
+            }
+        },
+        Err(error) => {
+            eprintln!("ERROR: {}, {} ", card_path.display(), error);
+            process::exit(1);
+        },
+    }
 }
 
 fn card_data_path() -> PathBuf {
