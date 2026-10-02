@@ -2,6 +2,7 @@ use engine::database::CardDatabase;
 use engine::game::deck_loading::{
     DeckList, PlayerDeckList, load_and_hydrate_decks, resolve_deck_list,
 };
+use engine::game::engine::start_game;
 use engine::types::ObjectId;
 use engine::types::format::FormatConfig;
 use engine::types::game_state::GameState;
@@ -74,6 +75,25 @@ fn main() {
     for id in state.command_zone.iter() {
         print_object_state(&state, id);
     }
+
+    let result = start_game(&mut state);
+
+    println!("Turn number: {}\n", state.turn_number);
+    println!("Active player: {:?}\n", state.active_player);
+    println!("P0 hand size: {}\n", state.players[0].hand.len());
+    println!("P1 hand size: {}\n", state.players[1].hand.len());
+    println!("P0 library size: {}\n", state.players[0].library.len());
+    println!("P1 library size: {}\n", state.players[1].library.len());
+    println!("Waiting for: {:?}\n", state.waiting_for);
+    println!(
+        "P0 drew from empty library: {}\n",
+        state.players[0].drew_from_empty_library
+    );
+    println!(
+        "P1 drew from empty library: {}\n",
+        state.players[1].drew_from_empty_library
+    );
+    println!("Events: {:#?}\n", result.events);
 }
 
 // set path to card database as a CLI arg
